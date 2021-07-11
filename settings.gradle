@@ -1,0 +1,3 @@
+rootProject.name = "Video Editor"
+include ':app'
+include ':videotrimmer'
