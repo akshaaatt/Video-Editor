@@ -1,4 +1,4 @@
-package com.limerse.videotrimmer
+package com.aemerse.videotrimmer
 
 import android.app.Activity
 import android.content.Intent

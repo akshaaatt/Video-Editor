@@ -1,4 +1,4 @@
-package com.limerse.videotrimmer
+package com.aemerse.videotrimmer
 
 import android.app.Dialog
 import android.content.Intent
@@ -18,13 +18,16 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import com.aemerse.rangeseekbar.interfaces.OnRangeSeekbarChangeListener
+import com.aemerse.rangeseekbar.interfaces.OnRangeSeekbarFinalValueListener
+import com.aemerse.rangeseekbar.interfaces.OnSeekbarFinalValueListener
 import com.arthenica.mobileffmpeg.Config
 import com.arthenica.mobileffmpeg.FFmpeg
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
-import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar
-import com.crystal.crystalrangeseekbar.widgets.CrystalSeekbar
+import com.aemerse.rangeseekbar.widgets.CrystalRangeSeekbar
+import com.aemerse.rangeseekbar.widgets.CrystalSeekbar
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
@@ -36,7 +39,7 @@ import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.limerse.videotrimmer.FileUtils.getPath
+import com.aemerse.videotrimmer.FileUtils.getPath
 import java.io.File
 import java.util.*
 
@@ -277,33 +280,41 @@ class ActVideoTrimmer : AppCompatActivity() {
                 }
             }
             if (hidePlayerSeek) seekbarController!!.visibility = View.GONE
-            seekbar!!.setOnRangeSeekbarFinalValueListener { minValue, maxValue ->
-                if (!hidePlayerSeek) seekbarController!!.visibility = View.VISIBLE
-            }
-            seekbar!!.setOnRangeSeekbarChangeListener { minValue, maxValue ->
-                val minVal = minValue as Long
-                val maxVal = maxValue as Long
-                if (lastMinValue != minVal) {
-                    seekTo(minValue)
-                    if (!hidePlayerSeek) seekbarController!!.visibility = View.INVISIBLE
+            seekbar!!.setOnRangeSeekbarFinalValueListener(object : OnRangeSeekbarFinalValueListener {
+                override fun finalValue(minValue: Number?, maxValue: Number?) {
+                    if (!hidePlayerSeek) seekbarController!!.visibility = View.VISIBLE
                 }
-                lastMinValue = minVal
-                lastMaxValue = maxVal
-                txtStartDuration!!.text = TrimmerUtils.formatSeconds(minVal)
-                txtEndDuration!!.text = TrimmerUtils.formatSeconds(maxVal)
-                if (trimType == 3) setDoneColor(minVal, maxVal)
-            }
-            seekbarController!!.setOnSeekbarFinalValueListener { value: Number ->
-                val value1 = value as Long
-                if (value1 in (lastMinValue + 1) until lastMaxValue) {
-                    seekTo(value1)
-                    return@setOnSeekbarFinalValueListener
+
+            })
+            seekbar!!.setOnRangeSeekbarChangeListener(object : OnRangeSeekbarChangeListener {
+                override fun valueChanged(minValue: Number?, maxValue: Number?) {
+                    val minVal = minValue as Long
+                    val maxVal = maxValue as Long
+                    if (lastMinValue != minVal) {
+                        seekTo(minValue)
+                        if (!hidePlayerSeek) seekbarController!!.visibility = View.INVISIBLE
+                    }
+                    lastMinValue = minVal
+                    lastMaxValue = maxVal
+                    txtStartDuration!!.text = TrimmerUtils.formatSeconds(minVal)
+                    txtEndDuration!!.text = TrimmerUtils.formatSeconds(maxVal)
+                    if (trimType == 3) setDoneColor(minVal, maxVal)
                 }
-                if (value1 > lastMaxValue) seekbarController!!.setMinStartValue(lastMaxValue.toFloat()).apply() else if (value1 < lastMinValue) {
-                    seekbarController!!.setMinStartValue(lastMinValue.toFloat()).apply()
-                    if (videoPlayer!!.playWhenReady) seekTo(lastMinValue)
+            })
+
+            seekbarController!!.setOnSeekbarFinalValueListener(object : OnSeekbarFinalValueListener {
+                override fun finalValue(value: Number?) {
+                    val value1 = value as Long
+                    if (value1 in (lastMinValue + 1) until lastMaxValue) {
+                        seekTo(value1)
+                        return
+                    }
+                    if (value1 > lastMaxValue) seekbarController!!.setMinStartValue(lastMaxValue.toFloat()).apply() else if (value1 < lastMinValue) {
+                        seekbarController!!.setMinStartValue(lastMinValue.toFloat()).apply()
+                        if (videoPlayer!!.playWhenReady) seekTo(lastMinValue)
+                    }
                 }
-            }
+            })
         } catch (e: Exception) {
             e.printStackTrace()
         }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.limerse.videotrimmer">
+    package="com.aemerse.videotrimmer">
 
     <application>
-        <activity android:name="com.limerse.videotrimmer.ActVideoTrimmer"
+        <activity android:name="com.aemerse.videotrimmer.ActVideoTrimmer"
             android:screenOrientation="portrait"
             android:launchMode="singleTask"
             android:theme="@style/VideoTrimmerTheme"/>

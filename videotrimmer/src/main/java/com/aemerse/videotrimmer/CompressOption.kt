@@ -1,4 +1,4 @@
-package com.limerse.videotrimmer
+package com.aemerse.videotrimmer
 
 import android.os.Parcel
 import android.os.Parcelable

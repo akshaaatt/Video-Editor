@@ -1,4 +1,5 @@
 <resources>
+    <string name="app_name">Trimmer</string>
     <string name="txt_empty" />
     <string name="txt_done">Done</string>
     <string name="txt_title_not_supported">Alert!</string>

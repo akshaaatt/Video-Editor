@@ -1,4 +1,4 @@
-package com.limerse.videotrimmer
+package com.aemerse.videoeditor
 
 import org.junit.Test
 

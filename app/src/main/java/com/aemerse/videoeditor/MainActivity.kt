@@ -1,4 +1,4 @@
-package com.limerse.videoeditor
+package com.aemerse.videoeditor
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
